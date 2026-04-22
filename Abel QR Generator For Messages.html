@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>QR Generator - Official Secure App</title>
+    <style>
+        /* Mobile and Laptop Friendly Styling */
+        body { font-family: 'Segoe UI', sans-serif; background-color: #f0f2f5; padding: 10px; margin: 0; }
+        .app-card { background: white; max-width: 600px; margin: 10px auto; padding: 20px; border-radius: 15px; box-shadow: 0 5px 20px rgba(0,0,0,0.1); }
+        
+        #agreement-screen { text-align: left; }
+        .legal-scroll { height: 250px; overflow-y: scroll; border: 1px solid #ddd; padding: 15px; background: #fafafa; font-size: 13px; border-radius: 8px; }
+        
+        #generator-interface { display: none; text-align: center; }
+        
+        input { width: 90%; padding: 15px; margin: 15px 0; border: 2px solid #e0e0e0; border-radius: 10px; font-size: 16px; box-sizing: border-box; }
+        
+        .btn-group { display: flex; flex-wrap: wrap; justify-content: center; gap: 10px; }
+        button { padding: 12px 20px; border: none; border-radius: 8px; font-size: 15px; cursor: pointer; font-weight: bold; transition: 0.2s; }
+        
+        .gen-btn { background: #3498db; color: white; }
+        .clear-btn { background: #95a5a6; color: white; }
+        .dl-btn { background: #2ecc71; color: white; display: none; margin-top: 15px; }
+        button:disabled { background: #bdc3c7; cursor: not-allowed; }
+        
+        #qrcode { margin-top: 20px; display: flex; justify-content: center; padding: 10px; background: white; }
+        h2 { border-bottom: 2px solid #3498db; padding-bottom: 5px; font-size: 18px; }
+        .important { color: #c0392b; font-weight: bold; }
+    </style>
+</head>
+<body>
+
+<div class="app-card">
+    
+    <div id="agreement-screen">
+        <center><h1>User Agreement</h1></center>
+        <div class="legal-scroll">
+            <h2>1. Terms of Service</h2>
+            <p><strong>Developer:</strong> Abel Joseph Christopher</p>
+            <p><strong>Developer Liability:</strong> The developer is <strong>not responsible</strong> if the user uses any feature in the app in a bad way. Even if the user invents a new way to use any feature (including the generator and download feature) in a bad way, the user is 100% responsible. The developer shall not be blamed.</p>
+            
+            <p><strong>The "New Bad Way" Clause:</strong> <span class="important">Users are strictly forbidden from using this app for any harmful purpose. Even if a user invents a brand new way to use this app for bad things that has never been seen before, it is still a violation.</span></p>
+            
+            <p><strong>Ownership:</strong> This app and its design belong to Abel Joseph Christopher. No one is allowed to copy this code or pretend they built it.</p>
+            
+            <h2>2. Privacy & Data</h2>
+            <p><strong>How it works:</strong> This app takes the text you type and "copy-pastes" it into a QR code format. This happens entirely inside your browser.</p>
+            
+            <p><strong>Third-Party Libraries:</strong> This app uses the "qrcode.js" library to draw the matrix. The developer does not control this library.</p>
+            
+            <p><strong>Hosting & GitHub:</strong> This app is hosted on <strong>GitHub Pages</strong> with the permission and supervision of the developer's parent. Please note that GitHub is a third-party service. GitHub may collect certain data (like your IP address or browser type) as part of their own hosting rules. The developer has no control over GitHub’s data collection.</p>
+            
+            <p><strong>GitHub Updates:</strong> If GitHub suddenly changes its rules or adds new data tracking updates, the developer of this app is not responsible for those changes. Those are external factors beyond this app's code.</p>
+            <hr>
+            <p><strong>Note on Functionality:</strong> The QR Code generator only lets the scanner copy the text you entered.</p>
+        </div>
+        <br>
+        <input type="checkbox" id="agree-checkbox" onchange="toggleButton()"> 
+<br>
+        <label for="agree-checkbox"><strong>I agree to the Terms and Privacy Policy above.</strong></label>
+        
+        <div style="text-align: center; margin-top: 20px;">
+            <button id="enter-btn" class="gen-btn" onclick="showGenerator()" disabled>Enter App</button>
+        </div>
+    </div>
+
+    <div id="generator-interface">
+        <h1>QR Generator</h1>
+        <input type="text" id="qr-input" placeholder="Type your message here...">
+        
+        <div class="btn-group">
+            <button class="gen-btn" onclick="generateNow()">Generate QR Code</button>
+            <button class="clear-btn" onclick="clearAll()">Clear Text</button>
+        </div>
+
+        <div id="qrcode"></div>
+        
+        <center>
+            <button id="download-btn" class="dl-btn" onclick="downloadQR()">Download QR Code</button>
+        </center>
+    </div>
+
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+<script>
+    function toggleButton() {
+        document.getElementById("enter-btn").disabled = !document.getElementById("agree-checkbox").checked;
+    }
+
+    function showGenerator() {
+        document.getElementById("agreement-screen").style.display = "none";
+        document.getElementById("generator-interface").style.display = "block";
+    }
+
+    var qrcode = new QRCode(document.getElementById("qrcode"), {
+        width: 200, height: 200
+    });
+
+    function generateNow() {		
+        var val = document.getElementById("qr-input").value.trim();
+        if (val === "") {
+            alert("No message inserted");
+            document.getElementById("download-btn").style.display = "none";
+            return;
+        }
+        qrcode.makeCode(val);
+        document.getElementById("download-btn").style.display = "inline-block";
+    }
+
+    function clearAll() {
+        document.getElementById("qr-input").value = "";
+        document.getElementById("qrcode").innerHTML = "";
+        document.getElementById("download-btn").style.display = "none";
+        // Re-initialize empty QR object
+        qrcode = new QRCode(document.getElementById("qrcode"), { width: 200, height: 200 });
+    }
+
+    function downloadQR() {
+        const img = document.querySelector("#qrcode img");
+        if (img) {
+            const link = document.createElement("a");
+            link.href = img.src;
+            link.download = "Abel-QR-Code.png";
+            link.click();
+        } else {
+            // Support for canvas if img hasn't loaded
+            const canvas = document.querySelector("#qrcode canvas");
+            const link = document.createElement("a");
+            link.href = canvas.toDataURL("image/png");
+            link.download = "Abel-QR-Code.png";
+            link.click();
+        }
+    }
+</script>
+
+</body>
+</html>
